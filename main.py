@@ -1,26 +1,50 @@
-from flask import Flask, request,render_template
-import forms
+from flask import Flask, request,render_template, Response
+from flask_wtf.csrf import CSRFProtect
 
+from flask import flash
+from flask import g
+
+import forms
 app=Flask(__name__)
+app.secret_key="esta es la clave secreta"
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'),404
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@app.before_request
+def before_request():
+    g.prueba = 'Hola'
+    print('antes 1')
+
 @app.route("/alumnos",methods=["GET","POST"])
 def alumnos():
+    print('dentro 2')
+    valor = g.prueba
+    print('el dato es: {}'.format(valor))
     nom=""
     correo=""
     apa=""
     alum_form=forms.UserForm(request.form)
-    if request.method=='POST':
+    if request.method=='POST'and alum_form.validate():
         nom=alum_form.nombre.data
         correo=alum_form.email.data
         apa=alum_form.apaterno.data
+        mensaje = 'Bienvenido: {}'.format(nom)
+        flash(mensaje)
         print("nombre: {}".format(nom))
         print("apaterno: {}".format(apa))
         print("correo: {}".format(correo))
     return render_template("alumnos.html", form=alum_form, nom=nom, correo=correo, apa=apa)
+
+@app.after_request
+def after_request(response):
+    print('despues de ruta 3')
+    return response
 
 @app.route("/maestros")
 def maestros():
