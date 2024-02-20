@@ -3,11 +3,14 @@
 {% block content %}
 {%import "_macros.html" as macros%}
         <h1>Alumnos</h1>
-        <form action="" method="post">
+        <form action="" method="post" novalidate>
             <!-- {{macros.datos("nombre","NOMBRE")}}
             {{macros.datos("edad","EDAD", "numbers")}}
 
             {{macros.input_Form(form.nombre)}} -->
+
+           
+            <input type="hidden" name="csrf" value="{{csrf_token}}"/>
 
             {{macros.input_Form(form.nombre,class="form-control")}}
             {{macros.input_Form(form.email,class="form-control")}}
